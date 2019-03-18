@@ -50,6 +50,9 @@
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Core\FontArgs.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Gruntfile.ts" />
     <TypeScriptCompile Include="Main.ts" />
     <TypeScriptCompile Include="Core\ICallback.ts">
