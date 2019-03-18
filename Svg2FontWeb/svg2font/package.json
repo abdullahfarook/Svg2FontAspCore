@@ -1,0 +1,16 @@
+{
+  "name": "svg2font",
+  "version": "0.0.0",
+  "description": "svg2font",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "devDependencies": {
+    "@types/grunt": "^0.4.24"
+  },
+  "dependencies": {
+    "grunt": "^1.0.3",
+    "grunt-cli": "^1.3.2"
+  }
+}
