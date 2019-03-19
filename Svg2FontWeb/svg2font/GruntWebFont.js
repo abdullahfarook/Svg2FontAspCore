@@ -16,23 +16,60 @@ var temp = require("temp");
 var Utils_1 = require("./Core/Utils");
 var GruntFont = /** @class */ (function () {
     function GruntFont() {
+        var _this = this;
         this._tasks = [];
-        //private _fontConfig: WebFontArgs;
         this._gruntConfig = {
-            done: { options: {} }
+            deafult: { optins: {} },
+            clean: { options: {} }
         };
         this._result = {};
         process.chdir(__dirname);
         var config = require('./Gruntfile');
         config(grunt);
         this._grunt = grunt;
-        this.RegisterAllDone();
+        //this.RegisterAllDone();
+        this._grunt.util.exit = function (e) {
+            if (!(e === 0)) {
+                console.log('Grunt Error', e);
+                //this._grunt.fail.warn('Stopped');
+                _this._deffered.reject(e.message);
+                _this._grunt.task.clearQueue();
+                //process.exit(1);
+            }
+        };
+        process.on('exit', function (code) {
+            console.log('Cleanup', code);
+            // Cleanup
+        });
+        this._grunt.option('force', false);
+        //var gruntLogWarn = grunt.log.warn;
+        //grunt.log.warn = function (error) {
+        //    var pattern = new RegExp("^Source file (.*) not found.$");
+        //    if (pattern.test(error)) {
+        //        grunt.fail.warn(error);
+        //    } else {
+        //        gruntLogWarn(error);
+        //    }
+        //};
+        //this._grunt.fail.fatal = function (ex: any) {
+        //    console.log('grunt fatal');
+        //}
+        //this._grunt.event.on('exit', function (e: any) {
+        //    console.log('grunt exit', e);
+        //});
+        //this._grunt.fail.warn = function (ex: any) {
+        //    console.log('grunt warn',ex);
+        //}
     }
     GruntFont.prototype.AddConfig = function (config) {
         // Concating objects
-        this._gruntConfig = __assign({}, this._gruntConfig, {
-            webfont: config
-        });
+        //this._gruntConfig =
+        //    {
+        //        ...this._gruntConfig, ...{
+        //        webfont:config
+        //    }
+        //}
+        this._fontConfig = config;
         return this;
     };
     GruntFont.prototype.DefaultTask = function () {
@@ -40,26 +77,58 @@ var GruntFont = /** @class */ (function () {
         this._tasks.push('default');
         this._grunt.registerTask('default', 'On Load Task', function () {
             console.log('Grunt runnung Default Task on Load');
-            console.log(_this._grunt.config.get('default.icons,src'));
-            _this.TaskComplete("Default Task Done");
+            _this._grunt.option("force", false);
+            //var done = this._grunt.task.current.async();
+            //try {
+            //    this._grunt.task.run(this._tasks);
+            //} catch (e) {
+            //    done(new Error(e));
+            //    this._deffered.reject(e);
+            //}
+            //done();
+            //console.log(this._grunt.config.get('default.icons,src'));
+            //this.TaskComplete("Default Task Done");
         });
         return this;
     };
+    //public FailPassTask(): GruntFont {
+    //    this._tasks.push('passfail');
+    //    this._gruntConfig = {
+    //        ...this._gruntConfig, ...
+    //        {
+    //            passfail: {
+    //                options: {
+    //                    force: true
+    //                },
+    //                all: {
+    //                    success: function () {
+    //                        console.log("Cool :)")
+    //                    },
+    //                    fail: function () {
+    //                        console.log("Task Failed :'(")
+    //                    },
+    //                    error: function () {
+    //                        console.log("Error :'(")
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    grunt.loadNpmTasks('grunt-passfail');
+    //    return this;
+    //}
     GruntFont.prototype.CreateTemp = function () {
         temp.track();
         Utils_1.Utils.TempDir = temp.mkdirSync();
-        //var tempName = temp.path({ dir: Utils.DestDir });
         //Utils.TempDir = tempName;
-        return this;
-    };
-    GruntFont.prototype.FailPassTask = function () {
-        this._tasks.unshift('failpass');
         return this;
     };
     GruntFont.prototype.WebFontTask = function () {
         this._tasks.unshift('webfont');
-        //console.log(Utils.TempDir);
-        //if (Utils.TempDir) { this._fontConfig. }
+        console.log(Utils_1.Utils.TempDir);
+        if (Utils_1.Utils.TempDir) {
+            console.log("Temp Folder: " + Utils_1.Utils.TempDir);
+        }
         this._grunt.loadNpmTasks('grunt-webfont');
         return this;
     };
@@ -72,19 +141,49 @@ var GruntFont = /** @class */ (function () {
         var _this = this;
         return new Promise(function (res, rej) {
             _this._deffered = { resolve: res, reject: rej };
+            _this.AttachTasksConfig();
             console.log(_this._gruntConfig);
             _this._grunt.initConfig(_this._gruntConfig);
-            _this._grunt.tasks(_this._tasks);
+            console.log(_this._tasks);
+            _this._grunt.registerTask('default', ['webfont', 'success']);
+            //this._grunt.tasks(this._tasks);
+            _this._grunt.tasks('default');
         });
     };
-    GruntFont.prototype.RegisterAllDone = function (data) {
+    GruntFont.prototype.AttachTasksConfig = function () {
+        if (this._gruntConfig) {
+            this._fontConfig.icons.src = __dirname;
+            this._gruntConfig = __assign({}, this._gruntConfig, {
+                webfont: this._fontConfig
+            });
+        }
+    };
+    GruntFont.prototype.ExitOnWarn = function () {
+        var g = this._grunt;
+        //var gruntLogWarn = g.log.warn;
+        g.log.warn = function (error) {
+            //gruntLogWarn(error); // The original warning.
+            grunt.fail.warn(error); // Forced stop.
+        };
+        return this;
+    };
+    GruntFont.prototype.SuccessTask = function () {
         var _this = this;
-        this._tasks.push('done');
-        this._grunt.registerTask('done', 'on All Tasks done', function () {
-            _this._deffered.resolve(_this._result.data);
-            console.log('All Tasks Done from GruntWebFont Class');
-            _this.TaskComplete();
+        this._tasks.push('success');
+        this._grunt.registerTask('success', 'on All Tasks done', function () {
+            _this._deffered.resolve("Success");
+            console.log('All Tasks Success from GruntWebFont Class');
         });
+        return this;
+    };
+    GruntFont.prototype.CleanTask = function (data) {
+        this._tasks.push('clean');
+        this._grunt.registerTask('clean', 'on All Tasks done', function () {
+            //this._deffered.resolve(this._result.data);
+            console.log('All Tasks Clean from GruntWebFont Class');
+            //this.TaskComplete();
+        });
+        return this;
     };
     GruntFont.prototype.TaskComplete = function (data) {
         var done = this._grunt.task.current.async();
