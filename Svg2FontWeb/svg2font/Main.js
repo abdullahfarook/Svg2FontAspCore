@@ -1,13 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var GruntWebFont_1 = require("./GruntWebFont");
-var FontArgs_1 = require("./Core/FontArgs");
+var WebFontArgs_1 = require("./Core/Arguments/WebFontArgs");
 function Main(callback, data) {
     var svg2Font = new GruntWebFont_1.GruntFont()
-        .AddConfig(new FontArgs_1.Webfont())
+        .AddConfig(new WebFontArgs_1.Webfont())
+        .CreateTemp()
         .WebFontTask()
         .Build()
         .then(function (x) {
+        console.log("Promise Resolve From Main.ts");
         console.log("Result: " + x);
         callback(null, x);
     })

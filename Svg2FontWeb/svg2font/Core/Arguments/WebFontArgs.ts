@@ -1,6 +1,6 @@
-﻿import * as Path from 'path';
+﻿import { Utils } from '../Utils';
 export 
-    class Webfont {
+    class Webfont implements ITaskConfig {
     constructor() {
         this.icons = new Icons();
     }
@@ -12,8 +12,8 @@ class Icons {
     dest: string;
     constructor() {
         this.options = new Options();
-        this.src = Path.join(__dirname, '../../wwwroot/svg/*.svg');
-        this.dest = Path.join(__dirname, '../../wwwroot/font');
+        this.src = Utils.FromCurrentDir('../../wwwroot/svg/*.svg');
+        this.dest = Utils.FromCurrentDir('../../wwwroot/font/');
     }
     options: Options;
 }
