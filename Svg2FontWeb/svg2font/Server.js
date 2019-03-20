@@ -1,22 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Main_1 = require("./Main");
-Main_1.Main(function (cb) {
-    console.log("Promise Resolve From Server.ts");
-    //var num = getInput();
+var Utils_1 = require("./Core/Utils");
+Main_1.Main(function (error, result) {
+    if (error) {
+        console.log(error.message + " => Server.ts");
+    }
+    else {
+        console.log("Promise Resolved Result: " + result + " => Server.ts");
+    }
 }, "arg");
-//function dealWithInput(str:any) {
-//    console.log(str)
-//}
-//function getInput(){
-//    const readline = require('readline');
-//    const rl = readline.createInterface({
-//        input: process.stdin,
-//        output: process.stdout
-//    });
-//    rl.question('Lemme test: ', (ans:any) => {
-//        rl.close();
-//        dealWithInput(ans);
-//    });
-//}
+if (IsDebug) {
+    Utils_1.Utils.PauseConsole();
+}
+function IsDebug() {
+    var argv = process.execArgv.join();
+    return argv.includes('inspect') || argv.includes('debug');
+}
 //# sourceMappingURL=Server.js.map

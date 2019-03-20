@@ -16,7 +16,6 @@ var temp = require("temp");
 var Utils_1 = require("./Core/Utils");
 var GruntFont = /** @class */ (function () {
     function GruntFont() {
-        var _this = this;
         this._tasks = [];
         this._gruntConfig = {
             deafult: { optins: {} },
@@ -28,19 +27,6 @@ var GruntFont = /** @class */ (function () {
         config(grunt);
         this._grunt = grunt;
         //this.RegisterAllDone();
-        this._grunt.util.exit = function (e) {
-            if (!(e === 0)) {
-                console.log('Grunt Error', e);
-                //this._grunt.fail.warn('Stopped');
-                _this._deffered.reject(e.message);
-                _this._grunt.task.clearQueue();
-                //process.exit(1);
-            }
-        };
-        process.on('exit', function (code) {
-            console.log('Cleanup', code);
-            // Cleanup
-        });
         this._grunt.option('force', false);
         //var gruntLogWarn = grunt.log.warn;
         //grunt.log.warn = function (error) {
@@ -117,6 +103,22 @@ var GruntFont = /** @class */ (function () {
     //    grunt.loadNpmTasks('grunt-passfail');
     //    return this;
     //}
+    //private TaskComplete(data?: any) {
+    //    var done = this._grunt.task.current.async();
+    //    done();
+    //}
+    //public CleanTask(data?: any): GruntFont {
+    //    this._tasks.push('clean');
+    //    this._grunt.registerTask('clean', 'on All Tasks done', () => {
+    //        //this._deffered.resolve(this._result.data);
+    //        console.log('All Tasks Clean from GruntWebFont Class');
+    //        //this.TaskComplete();
+    //    });
+    //    return this;
+    //}
+    //private Exception(error:any) {
+    //    this._deffered.reject(error);
+    //}
     GruntFont.prototype.CreateTemp = function () {
         temp.track();
         Utils_1.Utils.TempDir = temp.mkdirSync();
@@ -145,7 +147,7 @@ var GruntFont = /** @class */ (function () {
             console.log(_this._gruntConfig);
             _this._grunt.initConfig(_this._gruntConfig);
             console.log(_this._tasks);
-            _this._grunt.registerTask('default', ['webfont', 'success']);
+            _this._grunt.registerTask('default', _this._tasks);
             //this._grunt.tasks(this._tasks);
             _this._grunt.tasks('default');
         });
@@ -158,15 +160,6 @@ var GruntFont = /** @class */ (function () {
             });
         }
     };
-    GruntFont.prototype.ExitOnWarn = function () {
-        var g = this._grunt;
-        //var gruntLogWarn = g.log.warn;
-        g.log.warn = function (error) {
-            //gruntLogWarn(error); // The original warning.
-            grunt.fail.warn(error); // Forced stop.
-        };
-        return this;
-    };
     GruntFont.prototype.SuccessTask = function () {
         var _this = this;
         this._tasks.push('success');
@@ -176,21 +169,34 @@ var GruntFont = /** @class */ (function () {
         });
         return this;
     };
-    GruntFont.prototype.CleanTask = function (data) {
-        this._tasks.push('clean');
-        this._grunt.registerTask('clean', 'on All Tasks done', function () {
-            //this._deffered.resolve(this._result.data);
-            console.log('All Tasks Clean from GruntWebFont Class');
-            //this.TaskComplete();
-        });
+    GruntFont.prototype.ReturnGruntException = function (exitOnWarn) {
+        var _this = this;
+        this._grunt.util.exit = function (e) {
+            if (!(e === 0)) {
+                //console.log('Grunt Error', e);
+                //this._grunt.fail.warn('Stopped');
+                _this._deffered.reject(_this._error);
+                _this._grunt.task.clearQueue();
+                //process.exit(1);
+            }
+        };
+        if (exitOnWarn) {
+            var g = this._grunt;
+            //var gruntLogWarn = g.log.warn;
+            g.log.warn = function (error) {
+                //gruntLogWarn(error); // The original warning.
+                _this._error = new Error(error);
+                grunt.fail.warn(error); // Forced stop.
+            };
+            return this;
+        }
         return this;
     };
-    GruntFont.prototype.TaskComplete = function (data) {
-        var done = this._grunt.task.current.async();
-        done();
-    };
-    GruntFont.prototype.Exception = function (error) {
-        this._deffered.reject(error);
+    GruntFont.prototype.RegisterCleanup = function () {
+        process.on('exit', function (code) {
+            console.log('Cleanup', code);
+            // Cleanup
+        });
     };
     return GruntFont;
 }());

@@ -5,13 +5,13 @@ var WebFontArgs_1 = require("./Core/Arguments/WebFontArgs");
 function Main(callback, data) {
     var svg2Font = new GruntWebFont_1.GruntFont()
         .AddConfig(new WebFontArgs_1.Webfont())
-        .ExitOnWarn()
+        .ReturnGruntException(true)
         //.DefaultTask()
         .CreateTemp()
         //.FailPassTask()
         .WebFontTask()
         .SuccessTask()
-        .CleanTask()
+        //.CleanTask()
         .Build()
         .then(function (x) {
         console.log("Promise Resolve From Main.ts");
@@ -19,7 +19,7 @@ function Main(callback, data) {
         callback(null, x);
     })
         .catch(function (x) {
-        console.log("Error " + x);
+        console.log(x.message + " => Main.ts");
         callback(x);
     });
 }

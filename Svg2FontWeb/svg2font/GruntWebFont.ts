@@ -13,26 +13,14 @@ export
         deafult: { optins: {}},
         clean: { options: {}} };
     private _result: any = {};
+    private _error: any;
     constructor() {
         process.chdir(__dirname);
         var config = require('./Gruntfile');
         config(grunt);
         this._grunt = grunt;
         //this.RegisterAllDone();
-        this._grunt.util.exit = (e) => {
-            if (!(e === 0)) {
-                console.log('Grunt Error', e);
-                //this._grunt.fail.warn('Stopped');
-                this._deffered.reject(e.message);
-                this._grunt.task.clearQueue();
-                //process.exit(1);
-            }
-            
-        };
-        process.on('exit', (code) => {
-            console.log('Cleanup', code);
-            // Cleanup
-        });
+
         this._grunt.option('force', false);
         //var gruntLogWarn = grunt.log.warn;
         //grunt.log.warn = function (error) {
@@ -112,6 +100,22 @@ export
     //    grunt.loadNpmTasks('grunt-passfail');
     //    return this;
     //}
+    //private TaskComplete(data?: any) {
+    //    var done = this._grunt.task.current.async();
+    //    done();
+    //}
+     //public CleanTask(data?: any): GruntFont {
+    //    this._tasks.push('clean');
+    //    this._grunt.registerTask('clean', 'on All Tasks done', () => {
+    //        //this._deffered.resolve(this._result.data);
+    //        console.log('All Tasks Clean from GruntWebFont Class');
+    //        //this.TaskComplete();
+    //    });
+    //    return this;
+    //}
+    //private Exception(error:any) {
+    //    this._deffered.reject(error);
+    //}
     public CreateTemp(): GruntFont {
         temp.track();
         Utils.TempDir = temp.mkdirSync();
@@ -139,7 +143,7 @@ export
             console.log(this._gruntConfig);
             this._grunt.initConfig(this._gruntConfig);
             console.log(this._tasks);
-            this._grunt.registerTask('default', ['webfont','success']);
+            this._grunt.registerTask('default', this._tasks);
             //this._grunt.tasks(this._tasks);
             this._grunt.tasks('default');
         })
@@ -156,16 +160,6 @@ export
        
        
     }
-    public ExitOnWarn(): GruntFont
-    {
-        var g = this._grunt as any;
-        //var gruntLogWarn = g.log.warn;
-        g.log.warn = function (error: any) {
-            //gruntLogWarn(error); // The original warning.
-            grunt.fail.warn(error); // Forced stop.
-        };
-        return this;
-    }
     public SuccessTask(): GruntFont {
         this._tasks.push('success');
         this._grunt.registerTask('success', 'on All Tasks done', () => {
@@ -174,21 +168,34 @@ export
         });
         return this;
     }
-    public CleanTask(data?: any): GruntFont {
-        this._tasks.push('clean');
-        this._grunt.registerTask('clean', 'on All Tasks done', () => {
-            //this._deffered.resolve(this._result.data);
-            console.log('All Tasks Clean from GruntWebFont Class');
-            //this.TaskComplete();
-        });
+    public ReturnGruntException(exitOnWarn:boolean):GruntFont {
+
+        this._grunt.util.exit = (e) => {
+            if (!(e === 0)) {
+                //console.log('Grunt Error', e);
+                //this._grunt.fail.warn('Stopped');
+                this._deffered.reject(this._error);
+                this._grunt.task.clearQueue();
+                //process.exit(1);
+            }
+        };
+
+        if (exitOnWarn) {
+            var g = this._grunt as any;
+            //var gruntLogWarn = g.log.warn;
+            g.log.warn = (error: any)=> {
+                //gruntLogWarn(error); // The original warning.
+                this._error = new Error(error);
+                grunt.fail.warn(error); // Forced stop.
+            };
+            return this;
+        }
         return this;
     }
-    private TaskComplete(data?: any) {
-        var done = this._grunt.task.current.async();
-        done();
-    }
-    private Exception(error:any) {
-        this._deffered.reject(error);
-    }
-    
+    public RegisterCleanup() {
+        process.on('exit', (code) => {
+            console.log('Cleanup', code);
+            // Cleanup
+        });
+    }  
 }

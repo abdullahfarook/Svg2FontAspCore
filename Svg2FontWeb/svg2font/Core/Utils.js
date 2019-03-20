@@ -43,6 +43,27 @@ var Utils = /** @class */ (function () {
     Utils.FromCurrentDir = function (path) {
         return Path.join(__dirname, path);
     };
+    Utils.PauseConsole = function () {
+        var num = getInput();
+        function dealWithInput(str) {
+            console.log(str);
+        }
+        function getInput() {
+            var readline = require('readline');
+            var rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+            rl.question('', function (ans) {
+                rl.close();
+                dealWithInput(ans);
+            });
+        }
+    };
+    Utils.IsDebug = function () {
+        var argv = process.execArgv.join();
+        return argv.includes('inspect') || argv.includes('debug');
+    };
     Utils._currentDir = __dirname;
     Utils._srcDir = Path.join(Utils._currentDir, '../../wwwroot/svg/');
     Utils._destDir = Path.join(Utils._currentDir, '../../wwwroot/font/');

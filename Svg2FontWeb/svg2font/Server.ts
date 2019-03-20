@@ -1,22 +1,18 @@
 ﻿import { Main } from "./Main";
-
-Main((cb) => {
-    console.log("Promise Resolve From Server.ts");
-    //var num = getInput();
+import { Utils } from "./Core/Utils";
+Main((error,result) => {
+    if (error) {
+        console.log(`${error.message} => Server.ts`);
+    }
+    else {
+        console.log(`Promise Resolved Result: ${result} => Server.ts`);
+    }
 }, "arg");
 
-//function dealWithInput(str:any) {
-//    console.log(str)
-//}
-
-//function getInput(){
-//    const readline = require('readline');
-//    const rl = readline.createInterface({
-//        input: process.stdin,
-//        output: process.stdout
-//    });
-//    rl.question('Lemme test: ', (ans:any) => {
-//        rl.close();
-//        dealWithInput(ans);
-//    });
-//}
+if (IsDebug) {
+    Utils.PauseConsole();
+}
+function IsDebug(): boolean {
+    const argv = process.execArgv.join();
+    return argv.includes('inspect') || argv.includes('debug');
+}

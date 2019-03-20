@@ -27,4 +27,26 @@ export
     public static FromCurrentDir(path:string): string {
             return Path.join(__dirname, path);
     }
+    public static PauseConsole() {
+        var num = getInput();
+        function dealWithInput(str: any) {
+            console.log(str)
+        }
+
+        function getInput() {
+            const readline = require('readline');
+            const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+            rl.question('', (ans: any) => {
+                rl.close();
+                dealWithInput(ans);
+            });
+        }
+    }
+    public static IsDebug(): boolean {
+        const argv = process.execArgv.join();
+        return argv.includes('inspect') || argv.includes('debug');
+    }
 }
