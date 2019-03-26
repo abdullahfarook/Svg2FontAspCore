@@ -4,13 +4,14 @@ var GruntWebFont_1 = require("./GruntWebFont");
 var WebFontArgs_1 = require("./Core/Arguments/WebFontArgs");
 function Main(callback, data) {
     var svg2Font = new GruntWebFont_1.GruntFont()
-        .AddConfig(new WebFontArgs_1.Webfont())
+        .AddConfig(new WebFontArgs_1.WebfontConfig())
         .ReturnGruntException(true)
         //.DefaultTask()
         .CreateTemp()
         //.FailPassTask()
         .WebFontTask()
         .SuccessTask()
+        .RegisterCleanup()
         //.CleanTask()
         .Build()
         .then(function (x) {

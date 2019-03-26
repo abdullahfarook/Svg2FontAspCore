@@ -15,11 +15,7 @@ export
         return this._destDir;
     }
     static get TempDir(): string {
-        if (this._tempDir) {
-            return this._tempDir;
-        } else {
-            throw new Error("Temporary Directory is not set");
-        }
+        return this._tempDir;
     }
     static set TempDir(path:string){
         this._tempDir = path;

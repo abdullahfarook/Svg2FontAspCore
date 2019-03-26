@@ -13,7 +13,6 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var grunt = require("grunt");
 var temp = require("temp");
-var Utils_1 = require("./Core/Utils");
 var GruntFont = /** @class */ (function () {
     function GruntFont() {
         this._tasks = [];
@@ -121,16 +120,16 @@ var GruntFont = /** @class */ (function () {
     //}
     GruntFont.prototype.CreateTemp = function () {
         temp.track();
-        Utils_1.Utils.TempDir = temp.mkdirSync();
+        this._fontConfig.icons.dest = temp.mkdirSync();
         //Utils.TempDir = tempName;
         return this;
     };
     GruntFont.prototype.WebFontTask = function () {
         this._tasks.unshift('webfont');
-        console.log(Utils_1.Utils.TempDir);
-        if (Utils_1.Utils.TempDir) {
-            console.log("Temp Folder: " + Utils_1.Utils.TempDir);
-        }
+        //console.log(Utils.TempDir);
+        //if (Utils.TempDir) {
+        //    console.log(`Temp Folder: ${Utils.TempDir}`);
+        //}
         this._grunt.loadNpmTasks('grunt-webfont');
         return this;
     };
@@ -154,7 +153,7 @@ var GruntFont = /** @class */ (function () {
     };
     GruntFont.prototype.AttachTasksConfig = function () {
         if (this._gruntConfig) {
-            this._fontConfig.icons.src = __dirname;
+            //this._fontConfig.icons.src = __dirname;
             this._gruntConfig = __assign({}, this._gruntConfig, {
                 webfont: this._fontConfig
             });
@@ -195,8 +194,10 @@ var GruntFont = /** @class */ (function () {
     GruntFont.prototype.RegisterCleanup = function () {
         process.on('exit', function (code) {
             console.log('Cleanup', code);
+            temp.cleanupSync();
             // Cleanup
         });
+        return this;
     };
     return GruntFont;
 }());

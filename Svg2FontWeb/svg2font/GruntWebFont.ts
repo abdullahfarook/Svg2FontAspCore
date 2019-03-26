@@ -2,13 +2,13 @@
 import { IDeffered } from './Core/IDeffered';
 import * as temp from 'temp';
 import { Utils } from './Core/Utils';
-import { Webfont } from './Core/Arguments/WebFontArgs';
+import { WebfontConfig } from './Core/Arguments/WebFontArgs';
 export 
     class GruntFont {
     private _deffered: IDeffered;
     private _grunt: IGrunt;
     private _tasks: string[] = [];
-    private _fontConfig: Webfont;
+    private _fontConfig: WebfontConfig;
     private _gruntConfig: grunt.config.IProjectConfig = {
         deafult: { optins: {}},
         clean: { options: {}} };
@@ -42,7 +42,7 @@ export
         //    console.log('grunt warn',ex);
         //}
     }
-    public AddConfig(config: Webfont): GruntFont {
+    public AddConfig(config: WebfontConfig): GruntFont {
 
         // Concating objects
         //this._gruntConfig =
@@ -118,16 +118,16 @@ export
     //}
     public CreateTemp(): GruntFont {
         temp.track();
-        Utils.TempDir = temp.mkdirSync();
+        this._fontConfig.icons.dest = temp.mkdirSync();
         //Utils.TempDir = tempName;
         return this;
     }
     public WebFontTask(): GruntFont {
         this._tasks.unshift('webfont');
-        console.log(Utils.TempDir);
-        if (Utils.TempDir) {
-            console.log(`Temp Folder: ${Utils.TempDir}`);
-        }
+        //console.log(Utils.TempDir);
+        //if (Utils.TempDir) {
+        //    console.log(`Temp Folder: ${Utils.TempDir}`);
+        //}
         this._grunt.loadNpmTasks('grunt-webfont');
         return this;
     }
@@ -150,7 +150,7 @@ export
     }
     private AttachTasksConfig() {
         if (this._gruntConfig) {
-            this._fontConfig.icons.src = __dirname;
+            //this._fontConfig.icons.src = __dirname;
             this._gruntConfig = {
                 ...this._gruntConfig, ...{
                     webfont:this._fontConfig
@@ -192,10 +192,12 @@ export
         }
         return this;
     }
-    public RegisterCleanup() {
+    public RegisterCleanup():GruntFont {
         process.on('exit', (code) => {
             console.log('Cleanup', code);
+            temp.cleanupSync();
             // Cleanup
         });
+        return this;
     }  
 }

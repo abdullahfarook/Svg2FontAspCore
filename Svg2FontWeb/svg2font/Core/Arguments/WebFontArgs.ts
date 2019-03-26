@@ -1,6 +1,6 @@
 ﻿import { Utils } from '../Utils';
 export 
-    class Webfont implements ITaskConfig {
+    class WebfontConfig implements ITaskConfig {
     constructor() {
         this.icons = new Icons();
     }

@@ -27,12 +27,7 @@ var Utils = /** @class */ (function () {
     });
     Object.defineProperty(Utils, "TempDir", {
         get: function () {
-            if (this._tempDir) {
-                return this._tempDir;
-            }
-            else {
-                throw new Error("Temporary Directory is not set");
-            }
+            return this._tempDir;
         },
         set: function (path) {
             this._tempDir = path;

@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = require("../Utils");
-var Webfont = /** @class */ (function () {
-    function Webfont() {
+var WebfontConfig = /** @class */ (function () {
+    function WebfontConfig() {
         this.icons = new Icons();
     }
-    return Webfont;
+    return WebfontConfig;
 }());
-exports.Webfont = Webfont;
+exports.WebfontConfig = WebfontConfig;
 var Icons = /** @class */ (function () {
     function Icons() {
         this.options = new Options();

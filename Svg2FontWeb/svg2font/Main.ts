@@ -1,16 +1,17 @@
 ﻿import { ICallback } from "./Core/ICallback";
 import { GruntFont } from "./GruntWebFont";
-import { Webfont } from "./Core/Arguments/WebFontArgs";
+import { WebfontConfig } from "./Core/Arguments/WebFontArgs";
 
 export function Main(callback: ICallback, data: any) {
     var svg2Font = new GruntFont()
-        .AddConfig(new Webfont())
+        .AddConfig(new WebfontConfig())
         .ReturnGruntException(true)
         //.DefaultTask()
         .CreateTemp()
         //.FailPassTask()
         .WebFontTask()
         .SuccessTask()
+        .RegisterCleanup()
         //.CleanTask()
         .Build()
         .then(x => {
