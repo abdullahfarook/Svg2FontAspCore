@@ -1,3 +1,3 @@
 cd..
-cd Api/Kohsaar
+cd Svg2FontWeb
 dotnet watch run

@@ -12,8 +12,8 @@ export class AppComponent implements OnInit {
   public uploadObj: UploaderComponent;
 
   public path: Object = {
-      saveUrl: 'https://aspnetmvc.syncfusion.com/services/api/uploadbox/Save',
-      removeUrl: 'https://aspnetmvc.syncfusion.com/services/api/uploadbox/Remove'
+      saveUrl: 'http://localhost:57754/api/Uploader/Save',
+      removeUrl: 'http://localhost:57754/api/Uploader/Remove'
   };
 
   public allowExtensions: string = '.png, .jpg, .jpeg';
