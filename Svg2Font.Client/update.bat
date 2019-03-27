@@ -1,0 +1,1 @@
+typescript-ref http://localhost:52303 src/app/shared/models/kohsaar

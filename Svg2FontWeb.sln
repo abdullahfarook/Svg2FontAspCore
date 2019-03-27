@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Svg2Font.Api", "Svg2FontWeb
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "svg2font.js", "Svg2FontWeb\svg2font\svg2font.js.njsproj", "{2258E910-9204-4F6B-9E0D-937EB44C3430}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Svg2Font.Client", "Svg2Font.Client\Svg2Font.Client.csproj", "{AFF6056F-1678-4BB6-9F92-C4C27ACA61D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2258E910-9204-4F6B-9E0D-937EB44C3430}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2258E910-9204-4F6B-9E0D-937EB44C3430}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2258E910-9204-4F6B-9E0D-937EB44C3430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFF6056F-1678-4BB6-9F92-C4C27ACA61D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFF6056F-1678-4BB6-9F92-C4C27ACA61D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFF6056F-1678-4BB6-9F92-C4C27ACA61D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFF6056F-1678-4BB6-9F92-C4C27ACA61D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
