@@ -3,18 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = require("../Utils");
 var WebfontConfig = /** @class */ (function () {
     function WebfontConfig() {
-        this.icons = new Icons();
+        this.config = new Config();
     }
     return WebfontConfig;
 }());
 exports.WebfontConfig = WebfontConfig;
-var Icons = /** @class */ (function () {
-    function Icons() {
-        this.options = new Options();
+var Config = /** @class */ (function () {
+    function Config() {
         this.src = Utils_1.Utils.FromCurrentDir('../../wwwroot/svg/*.svg');
         this.dest = Utils_1.Utils.FromCurrentDir('../../wwwroot/font/');
+        this.options = new Options();
     }
-    return Icons;
+    return Config;
 }());
 var Options = /** @class */ (function () {
     function Options() {

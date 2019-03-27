@@ -3,11 +3,10 @@ import { GruntFont } from "./GruntWebFont";
 import { WebfontConfig } from "./Core/Arguments/WebFontArgs";
 
 export function Main(callback: ICallback, data: any) {
-    var svg2Font = new GruntFont()
-        .AddConfig(new WebfontConfig())
+    var svg2Font = new GruntFont(new WebfontConfig())
         .ReturnGruntException(true)
         //.DefaultTask()
-        .CreateTemp()
+        .CreateTempAndZipTask()
         //.FailPassTask()
         .WebFontTask()
         .SuccessTask()
@@ -21,7 +20,11 @@ export function Main(callback: ICallback, data: any) {
         })
         .catch((x:Error) =>
         {
-            console.log(`${x.message} => Main.ts`);
-            callback(x);
+            if (x) {
+                console.log(`${x.message} => Main.ts`);
+                callback(x);
+            } else {
+                callback(new Error('Error Occured in generating fonts'));
+            }         
         });
 }

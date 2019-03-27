@@ -3,24 +3,26 @@ import { IDeffered } from './Core/IDeffered';
 import * as temp from 'temp';
 import { Utils } from './Core/Utils';
 import { WebfontConfig } from './Core/Arguments/WebFontArgs';
+import { CompressArgs } from './Core/Arguments/CompressArgs';
 export 
     class GruntFont {
     private _deffered: IDeffered;
     private _grunt: IGrunt;
     private _tasks: string[] = [];
     private _fontConfig: WebfontConfig;
+    private _compressConfig: CompressArgs;
     private _gruntConfig: grunt.config.IProjectConfig = {
         deafult: { optins: {}},
         clean: { options: {}} };
     private _result: any = {};
     private _error: any;
-    constructor() {
+    constructor(fontConfig: WebfontConfig) {
         process.chdir(__dirname);
         var config = require('./Gruntfile');
         config(grunt);
         this._grunt = grunt;
+        this._fontConfig = fontConfig;
         //this.RegisterAllDone();
-
         this._grunt.option('force', false);
         //var gruntLogWarn = grunt.log.warn;
         //grunt.log.warn = function (error) {
@@ -42,39 +44,19 @@ export
         //    console.log('grunt warn',ex);
         //}
     }
-    public AddConfig(config: WebfontConfig): GruntFont {
+    //public AddConfigs(config: WebfontConfig): GruntFont {
 
-        // Concating objects
-        //this._gruntConfig =
-        //    {
-        //        ...this._gruntConfig, ...{
-        //        webfont:config
-        //    }
-        //}
-        this._fontConfig = config;
-        return this;
-    }
-    public DefaultTask():GruntFont {
-        this._tasks.push('default');
-        this._grunt.registerTask('default', 'On Load Task', () => {
-            console.log('Grunt runnung Default Task on Load');
-            this._grunt.option("force", false);
-            //var done = this._grunt.task.current.async();
-
-            //try {
-            //    this._grunt.task.run(this._tasks);
-            //} catch (e) {
-            //    done(new Error(e));
-            //    this._deffered.reject(e);
-            //}
-            
-            //done();
-            //console.log(this._grunt.config.get('default.icons,src'));
-            //this.TaskComplete("Default Task Done");
-        });
-        return this;
-    }
-    //public FailPassTask(): GruntFont {
+    //    // Concating objects
+    //    //this._gruntConfig =
+    //    //    {
+    //    //        ...this._gruntConfig, ...{
+    //    //        webfont:config
+    //    //    }
+    //    //}
+    //    this._fontConfig = config;
+    //    return this;
+    //}
+        //public FailPassTask(): GruntFont {
     //    this._tasks.push('passfail');
     //    this._gruntConfig = {
     //        ...this._gruntConfig, ...
@@ -116,12 +98,31 @@ export
     //private Exception(error:any) {
     //    this._deffered.reject(error);
     //}
-    public CreateTemp(): GruntFont {
-        temp.track();
-        this._fontConfig.icons.dest = temp.mkdirSync();
-        //Utils.TempDir = tempName;
-        return this;
-    }
+    //public ZipTask(): GruntFont {
+    //    this._tasks.push('zip');
+    //    this._grunt.loadNpmTasks('grunt-zip');
+    //    return this;
+    //}
+    //public DefaultTask():GruntFont {
+    //    this._tasks.push('default');
+    //    this._grunt.registerTask('default', 'On Load Task', () => {
+    //        console.log('Grunt runnung Default Task on Load');
+    //        this._grunt.option("force", false);
+    //        //var done = this._grunt.task.current.async();
+
+    //        //try {
+    //        //    this._grunt.task.run(this._tasks);
+    //        //} catch (e) {
+    //        //    done(new Error(e));
+    //        //    this._deffered.reject(e);
+    //        //}
+            
+    //        //done();
+    //        //console.log(this._grunt.config.get('default.icons,src'));
+    //        //this.TaskComplete("Default Task Done");
+    //    });
+    //    return this;
+    //}
     public WebFontTask(): GruntFont {
         this._tasks.unshift('webfont');
         //console.log(Utils.TempDir);
@@ -131,15 +132,28 @@ export
         this._grunt.loadNpmTasks('grunt-webfont');
         return this;
     }
-    public ZipTask(): GruntFont {
-        this._tasks.push('zip');
-        this._grunt.loadNpmTasks('grunt-zip');
+    public CreateTempAndZipTask(): GruntFont {
+        // Create Temp folder
+        temp.track();
+        var tempFolder = temp.mkdirSync();
+        this._fontConfig.config.dest = tempFolder;
+
+        // Compressing settings and registration in grunt
+        this._compressConfig = new CompressArgs();
+        console.log(this._compressConfig.config.options);
+        console.log(tempFolder + '\\**.html');
+        this._compressConfig.config.files[0].cwd = tempFolder + '\\';
+        //this._compressConfig.config.files[0].src = ['*.html','*.css'];
+        this._compressConfig.config.files[0].src = ['**'];
+        console.log(this._compressConfig.config.files[0]);
+        this._tasks.push('compress');
+        grunt.loadNpmTasks('grunt-contrib-compress');
         return this;
     }
     public Build(): Promise<any> {
         return new Promise<any>((res, rej) => {
             this._deffered = { resolve: res, reject: rej };
-            this.AttachTasksConfig();
+            this.RegisterConfigs();
             console.log(this._gruntConfig);
             this._grunt.initConfig(this._gruntConfig);
             console.log(this._tasks);
@@ -148,7 +162,7 @@ export
             this._grunt.tasks('default');
         })
     }
-    private AttachTasksConfig() {
+    private RegisterConfigs() {
         if (this._gruntConfig) {
             //this._fontConfig.icons.src = __dirname;
             this._gruntConfig = {
@@ -156,6 +170,14 @@ export
                     webfont:this._fontConfig
                 }}
         }
+        if (this._compressConfig) {
+            this._gruntConfig = {
+                ...this._gruntConfig, ...{
+                    compress: this._compressConfig
+                }
+            }
+        }
+        console.log(this._grunt.config);
 
        
        

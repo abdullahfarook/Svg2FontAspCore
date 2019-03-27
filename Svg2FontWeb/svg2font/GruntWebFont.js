@@ -13,8 +13,9 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var grunt = require("grunt");
 var temp = require("temp");
+var CompressArgs_1 = require("./Core/Arguments/CompressArgs");
 var GruntFont = /** @class */ (function () {
-    function GruntFont() {
+    function GruntFont(fontConfig) {
         this._tasks = [];
         this._gruntConfig = {
             deafult: { optins: {} },
@@ -25,6 +26,7 @@ var GruntFont = /** @class */ (function () {
         var config = require('./Gruntfile');
         config(grunt);
         this._grunt = grunt;
+        this._fontConfig = fontConfig;
         //this.RegisterAllDone();
         this._grunt.option('force', false);
         //var gruntLogWarn = grunt.log.warn;
@@ -46,36 +48,17 @@ var GruntFont = /** @class */ (function () {
         //    console.log('grunt warn',ex);
         //}
     }
-    GruntFont.prototype.AddConfig = function (config) {
-        // Concating objects
-        //this._gruntConfig =
-        //    {
-        //        ...this._gruntConfig, ...{
-        //        webfont:config
-        //    }
-        //}
-        this._fontConfig = config;
-        return this;
-    };
-    GruntFont.prototype.DefaultTask = function () {
-        var _this = this;
-        this._tasks.push('default');
-        this._grunt.registerTask('default', 'On Load Task', function () {
-            console.log('Grunt runnung Default Task on Load');
-            _this._grunt.option("force", false);
-            //var done = this._grunt.task.current.async();
-            //try {
-            //    this._grunt.task.run(this._tasks);
-            //} catch (e) {
-            //    done(new Error(e));
-            //    this._deffered.reject(e);
-            //}
-            //done();
-            //console.log(this._grunt.config.get('default.icons,src'));
-            //this.TaskComplete("Default Task Done");
-        });
-        return this;
-    };
+    //public AddConfigs(config: WebfontConfig): GruntFont {
+    //    // Concating objects
+    //    //this._gruntConfig =
+    //    //    {
+    //    //        ...this._gruntConfig, ...{
+    //    //        webfont:config
+    //    //    }
+    //    //}
+    //    this._fontConfig = config;
+    //    return this;
+    //}
     //public FailPassTask(): GruntFont {
     //    this._tasks.push('passfail');
     //    this._gruntConfig = {
@@ -118,12 +101,29 @@ var GruntFont = /** @class */ (function () {
     //private Exception(error:any) {
     //    this._deffered.reject(error);
     //}
-    GruntFont.prototype.CreateTemp = function () {
-        temp.track();
-        this._fontConfig.icons.dest = temp.mkdirSync();
-        //Utils.TempDir = tempName;
-        return this;
-    };
+    //public ZipTask(): GruntFont {
+    //    this._tasks.push('zip');
+    //    this._grunt.loadNpmTasks('grunt-zip');
+    //    return this;
+    //}
+    //public DefaultTask():GruntFont {
+    //    this._tasks.push('default');
+    //    this._grunt.registerTask('default', 'On Load Task', () => {
+    //        console.log('Grunt runnung Default Task on Load');
+    //        this._grunt.option("force", false);
+    //        //var done = this._grunt.task.current.async();
+    //        //try {
+    //        //    this._grunt.task.run(this._tasks);
+    //        //} catch (e) {
+    //        //    done(new Error(e));
+    //        //    this._deffered.reject(e);
+    //        //}
+    //        //done();
+    //        //console.log(this._grunt.config.get('default.icons,src'));
+    //        //this.TaskComplete("Default Task Done");
+    //    });
+    //    return this;
+    //}
     GruntFont.prototype.WebFontTask = function () {
         this._tasks.unshift('webfont');
         //console.log(Utils.TempDir);
@@ -133,16 +133,28 @@ var GruntFont = /** @class */ (function () {
         this._grunt.loadNpmTasks('grunt-webfont');
         return this;
     };
-    GruntFont.prototype.ZipTask = function () {
-        this._tasks.push('zip');
-        this._grunt.loadNpmTasks('grunt-zip');
+    GruntFont.prototype.CreateTempAndZipTask = function () {
+        // Create Temp folder
+        temp.track();
+        var tempFolder = temp.mkdirSync();
+        this._fontConfig.config.dest = tempFolder;
+        // Compressing settings and registration in grunt
+        this._compressConfig = new CompressArgs_1.CompressArgs();
+        console.log(this._compressConfig.config.options);
+        console.log(tempFolder + '\\**.html');
+        this._compressConfig.config.files[0].cwd = tempFolder + '\\';
+        //this._compressConfig.config.files[0].src = ['*.html','*.css'];
+        this._compressConfig.config.files[0].src = ['**'];
+        console.log(this._compressConfig.config.files[0]);
+        this._tasks.push('compress');
+        grunt.loadNpmTasks('grunt-contrib-compress');
         return this;
     };
     GruntFont.prototype.Build = function () {
         var _this = this;
         return new Promise(function (res, rej) {
             _this._deffered = { resolve: res, reject: rej };
-            _this.AttachTasksConfig();
+            _this.RegisterConfigs();
             console.log(_this._gruntConfig);
             _this._grunt.initConfig(_this._gruntConfig);
             console.log(_this._tasks);
@@ -151,13 +163,19 @@ var GruntFont = /** @class */ (function () {
             _this._grunt.tasks('default');
         });
     };
-    GruntFont.prototype.AttachTasksConfig = function () {
+    GruntFont.prototype.RegisterConfigs = function () {
         if (this._gruntConfig) {
             //this._fontConfig.icons.src = __dirname;
             this._gruntConfig = __assign({}, this._gruntConfig, {
                 webfont: this._fontConfig
             });
         }
+        if (this._compressConfig) {
+            this._gruntConfig = __assign({}, this._gruntConfig, {
+                compress: this._compressConfig
+            });
+        }
+        console.log(this._grunt.config);
     };
     GruntFont.prototype.SuccessTask = function () {
         var _this = this;

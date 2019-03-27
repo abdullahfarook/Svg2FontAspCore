@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/grunt": "^0.4.24",
     "@types/temp": "^0.8.33",
+    "grunt-contrib-compress": "^1.4.3",
     "grunt-passfail": "^0.1.2",
     "grunt-webfont": "^1.7.2"
   },

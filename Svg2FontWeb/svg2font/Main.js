@@ -3,11 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var GruntWebFont_1 = require("./GruntWebFont");
 var WebFontArgs_1 = require("./Core/Arguments/WebFontArgs");
 function Main(callback, data) {
-    var svg2Font = new GruntWebFont_1.GruntFont()
-        .AddConfig(new WebFontArgs_1.WebfontConfig())
+    var svg2Font = new GruntWebFont_1.GruntFont(new WebFontArgs_1.WebfontConfig())
         .ReturnGruntException(true)
         //.DefaultTask()
-        .CreateTemp()
+        .CreateTempAndZipTask()
         //.FailPassTask()
         .WebFontTask()
         .SuccessTask()
@@ -20,8 +19,13 @@ function Main(callback, data) {
         callback(null, x);
     })
         .catch(function (x) {
-        console.log(x.message + " => Main.ts");
-        callback(x);
+        if (x) {
+            console.log(x.message + " => Main.ts");
+            callback(x);
+        }
+        else {
+            callback(new Error('Error Occured in generating fonts'));
+        }
     });
 }
 exports.Main = Main;

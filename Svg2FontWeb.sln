@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Svg2FontWeb", "Svg2FontWeb\Svg2FontWeb.csproj", "{44E27834-C0E7-4B07-904E-029BF0648822}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Svg2Font.Api", "Svg2FontWeb\Svg2Font.Api.csproj", "{44E27834-C0E7-4B07-904E-029BF0648822}"
 EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "svg2font", "Svg2FontWeb\svg2font\svg2font.njsproj", "{2258E910-9204-4F6B-9E0D-937EB44C3430}"
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "svg2font.js", "Svg2FontWeb\svg2font\svg2font.js.njsproj", "{2258E910-9204-4F6B-9E0D-937EB44C3430}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

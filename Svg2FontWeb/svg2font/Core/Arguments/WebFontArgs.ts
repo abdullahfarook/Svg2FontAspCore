@@ -1,21 +1,13 @@
 ﻿import { Utils } from '../Utils';
 export 
     class WebfontConfig implements ITaskConfig {
-    constructor() {
-        this.icons = new Icons();
-    }
-    icons: Icons;
+    config: Config= new Config();
 }
 
-class Icons {
-    src:string;
-    dest: string;
-    constructor() {
-        this.options = new Options();
-        this.src = Utils.FromCurrentDir('../../wwwroot/svg/*.svg');
-        this.dest = Utils.FromCurrentDir('../../wwwroot/font/');
-    }
-    options: Options;
+class Config {
+    src: string = Utils.FromCurrentDir('../../wwwroot/svg/*.svg');
+    dest: string = Utils.FromCurrentDir('../../wwwroot/font/');
+    options: Options = new Options();
 }
 
 class Options {

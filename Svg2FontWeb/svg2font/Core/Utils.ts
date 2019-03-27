@@ -45,4 +45,7 @@ export
         const argv = process.execArgv.join();
         return argv.includes('inspect') || argv.includes('debug');
     }
+    //public static Normalize(path: string):string {
+    //    return path.normalize(path);
+    //}
 }
