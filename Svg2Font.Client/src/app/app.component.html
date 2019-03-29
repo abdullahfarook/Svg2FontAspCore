@@ -1,32 +1,31 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<!-- 
-<div style="text-align:center">
-  <ejs-uploader #defaultupload  [autoUpload]='false'></ejs-uploader>
-  </div>   -->
-
-  <div class="control-section">
-    <div class="col-lg-9">
-        <div class="control_wrapper">
-            <div class='imagepreview'>
-                <div id='dropArea' style='height: auto'>
-                    <span id='dropimage'> Drop image (JPG, PNG) files here or <a href="" id='browse'><u>Browse</u></a> </span>
-                    <ejs-uploader #previewupload id='previewfileupload' [asyncSettings]='path'
-                        [dropArea]='dropElement' [allowedExtensions]='allowExtensions' (selected)='onSelect($event)'
-                        (success)='onUploadSuccess($event)' (progress)='onFileUpload($event)' (failure)='onUploadFailed($event)' (removing)='onFileRemove($event)'>
-                    </ejs-uploader>
-                </div>
-            </div>
-        </div>
+<kendo-upload
+#upload="kendoUpload"
+(upload)="uploadEventHandler($event)"
+(remove)="removeEventHandler($event)"
+[autoUpload]="true"
+[restrictions]="myRestrictions"
+[saveUrl]="uploadSaveUrl"
+(complete)="selectFile($event)"
+(focus)="selectFile($event)"
+(valueChange)="selectFile($event)"
+(blur)="selectFile($event)"
+[(ngModel)]="allFiles"
+[removeUrl]="uploadRemoveUrl">
+<!-- <ng-template kendoUploadFileTemplate let-files let-state="state">
+    <div *ngFor="let file of files">
+            <div>Name: {{file.name}} Size: {{file.size}} bytes</div>
+            <button *ngIf="showButton(state)"
+                (click)="remove(file)"
+                class="k-button" style="position: relative; left: .2em;">
+                Remove
+            </button>
     </div>
-    <div class="col-lg-3 property-section">
-        <div class="property-panel-section">
-            <div class="property-panel-header">Properties</div>
-            <div class="property-panel-content" style='padding-top:25px;'>
-                <button class="e-btn e-css" id="clearbtn" title="Clear All" style="width:130px">Clear All</button>
-            </div>
-            <div class="property-panel-content" style='padding-top:25px;'>
-                <button class="e-btn e-css" id="uploadbtn" title="Upload All" style="width:130px">Upload All</button>
-            </div>
-        </div>
-    </div>
-</div>
+ </ng-template> -->
+</kendo-upload>
+<!-- <ol class="border">
+    <li>List Item<br/>And some more text here.<br/>The more text we add, the longer this thin gray border line to the left gets.</li>
+    <li>List Item<br/></li>
+    <li>List Item</li>
+    <li>List Item</li>
+  </ol> -->
+  
