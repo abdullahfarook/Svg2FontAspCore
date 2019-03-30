@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef, OnInit, Inject, AfterViewInit } from '@angular/core';
 import { FileRestrictions, SelectEvent, ClearEvent, RemoveEvent, FileInfo, FileState, UploadComponent, UploadEvent } from '@progress/kendo-angular-upload';
 import { SvgService } from 'src/services/svg.service';
+import { createElement } from '@syncfusion/ej2-base';
 import { DOCUMENT } from '@angular/platform-browser';
 @Component({
     selector: 'app-root',
@@ -57,7 +58,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
     public renderImages(){
         Array.from(document.getElementsByClassName("k-file-extension-wrapper")).forEach((item:HTMLElement,i)=> {
-            item.parentNode.removeChild(item);
+        item.childNodes.forEach(n=> item.removeChild(n));
+        let preview: HTMLImageElement = <HTMLImageElement>this.createElement('img', { className: 'img-preview' });
+        this.getUrlAsBlob(`${this.host}/svg/${this.allFiles[i].name}`).then(reader => {
+            preview.src = reader.result as string;
+            item.appendChild(preview);
+        })
          });
         // this.previewElements = document.getElementsByClassName('k-file-extension-wrapper') as any;
         // for (const iterator:Htmle of this.previewElements) {
@@ -100,5 +106,55 @@ export class AppComponent implements OnInit, AfterViewInit {
         return (state === FileState.Uploaded) ? true : false;
     }
     constructor(public SvgService: SvgService) {
+    }
+    private getUrlAsBlob(url: string): Promise<FileReader> {
+        return new Promise<FileReader>((res, rej) => {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.onerror = function (err) { console.log(err) };
+            request.responseType = 'blob';
+            // request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+            request.addEventListener('load', () => {
+                console.log(url);
+                var reader = new FileReader();
+                reader.readAsDataURL(request.response);
+                reader.onload = function (e) {
+                    res(reader);
+                };
+
+            },false)
+            request.send();
+        });
+    }
+    private createElement(tagName, properties) {
+        var SVG_REG = /^svg|^path|^g/;
+        //tslint:disable-next-line
+        var element = (SVG_REG.test(tagName) ? document.createElementNS('http://www.w3.org/2000/svg', tagName) : document.createElement(tagName));
+        if (typeof (properties) === 'undefined') {
+            return element;
+        }
+        element.innerHTML = (properties.innerHTML ? properties.innerHTML : '');
+        if (properties.className !== undefined) {
+            element.className = properties.className;
+        }
+        if (properties.id !== undefined) {
+            element.id = properties.id;
+        }
+        if (properties.styles !== undefined) {
+            element.setAttribute('style', properties.styles);
+        }
+        if (properties.attrs !== undefined) {
+            this.attributes(element, properties.attrs);
+        }
+        return element;
+    }
+     private attributes(element, attributes) {
+        var keys = Object.keys(attributes);
+        var ele = element;
+        for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+            var key = keys_1[_i];
+            ele.setAttribute(key, attributes[key]);
+        }
+        return ele;
     }
 }
