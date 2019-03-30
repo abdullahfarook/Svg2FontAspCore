@@ -14,7 +14,7 @@ using Svg2Font.Api.ViewModel;
 
 namespace Svg2FontWeb.Controllers
 {
-    [Route("api/Uploader")]
+    [Route("api/uploader")]
     [ApiController]
     public class UploaderController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace Svg2FontWeb.Controllers
         }
         [HttpPost]
         //[HttpOptions]
-        [Route("Save")]
+        [Route("save")]
         public IActionResult Save(IList<IFormFile> none)
         {
            
@@ -62,14 +62,14 @@ namespace Svg2FontWeb.Controllers
                 Response.Clear();
                 Response.ContentType = "application/json; charset=utf-8";
                 Response.StatusCode = 204;
-                Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = "No Content";
+                //Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = "No Content";
                 Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = e.Message;
             }
             return Content("");
         }
         [HttpPost]
         //[HttpOptions]
-        [Route("Remove")]
+        [Route("remove")]
         public IActionResult Remove(IList<IFormFile> none)
         {
             try

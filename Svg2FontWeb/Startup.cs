@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.NodeServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Svg2Font.Api.Core;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Svg2FontWeb
@@ -28,10 +30,14 @@ namespace Svg2FontWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddNodeServices(options=> {
-                options.LaunchWithDebugging = true;
-                options.DebuggingPort = 9889;
+            services.AddSingleton<INodeServices>(sp =>
+            {
+                return new NodeServicesPool(3, sp);
             });
+            //services.AddNodeServices(options=> {
+            //    //options.LaunchWithDebugging = true;
+            //    //options.DebuggingPort = 9889;
+            //});
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(Directory.GetCurrentDirectory()));
             services.AddCors(options =>

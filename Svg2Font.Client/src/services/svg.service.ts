@@ -11,4 +11,7 @@ constructor(private http: HttpClient) { }
 getAllSvgs():Observable<GetAllSvgsResponse>{
     return this.http.get<GetAllSvgsResponse>(`${this.api}/Uploader/GetAll`);
 }
+generateFonts():Observable<any>{
+    return this.http.get(this.api+'/font/generate',{responseType:'blob'})
+}
 }

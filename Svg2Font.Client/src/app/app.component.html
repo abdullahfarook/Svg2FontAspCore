@@ -1,14 +1,11 @@
 <kendo-upload
 #upload="kendoUpload"
-(upload)="uploadEventHandler($event)"
-(remove)="removeEventHandler($event)"
+(upload)="generateSelectedPreview($event)"
+(error)="onError($event)"
+(success)="onUploadSuccess($event)"
 [autoUpload]="true"
 [restrictions]="myRestrictions"
 [saveUrl]="uploadSaveUrl"
-(complete)="selectFile($event)"
-(focus)="selectFile($event)"
-(valueChange)="selectFile($event)"
-(blur)="selectFile($event)"
 [(ngModel)]="allFiles"
 [removeUrl]="uploadRemoveUrl">
 <!-- <ng-template kendoUploadFileTemplate let-files let-state="state">
@@ -22,6 +19,11 @@
     </div>
  </ng-template> -->
 </kendo-upload>
+<div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-4 example-col">
+          <p></p>
+          <button (click)="generateFonts()" kendoButton [icon]="'edit-tools'">Generate Font</button>
+        </div>
 <!-- <ol class="border">
     <li>List Item<br/>And some more text here.<br/>The more text we add, the longer this thin gray border line to the left gets.</li>
     <li>List Item<br/></li>

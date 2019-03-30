@@ -1,3 +1,3 @@
 ﻿export interface ICallback {
-    (error: Error, result?: any): any;
+    (error: any, result?: any): any;
 }

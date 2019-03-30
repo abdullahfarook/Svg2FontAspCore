@@ -16,7 +16,8 @@ export function Main(callback: ICallback, data: any) {
         .then(x => {
         console.log("Promise Resolve From Main.ts");
         console.log(`Result: ${x}`);
-        callback(null, x);
+            callback(null, x);
+            process.exit();
         })
         .catch((x:Error) =>
         {
@@ -24,7 +25,8 @@ export function Main(callback: ICallback, data: any) {
                 console.log(`${x.message} => Main.ts`);
                 callback(x);
             } else {
-                callback(new Error('Error Occured in generating fonts'));
-            }         
+                callback('Error Occured in generating fonts');
+            }
+            process.exit();
         });
 }

@@ -6,6 +6,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { UploadModule } from '@progress/kendo-angular-upload';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { NotificationModule } from '@progress/kendo-angular-notification';
+import { ButtonModule } from '@progress/kendo-angular-buttons';
+
+
 
 
 @NgModule({
@@ -13,7 +17,7 @@ import { FormsModule } from '@angular/forms';
     AppComponent
   ],
   imports: [
-    BrowserModule,FormsModule,HttpClientModule, UploadModule, BrowserAnimationsModule
+    BrowserModule,FormsModule,HttpClientModule, UploadModule, BrowserAnimationsModule, NotificationModule, ButtonModule
   ],
   providers: [SvgService],
   bootstrap: [AppComponent]

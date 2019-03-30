@@ -17,6 +17,7 @@ function Main(callback, data) {
         console.log("Promise Resolve From Main.ts");
         console.log("Result: " + x);
         callback(null, x);
+        process.exit();
     })
         .catch(function (x) {
         if (x) {
@@ -24,8 +25,9 @@ function Main(callback, data) {
             callback(x);
         }
         else {
-            callback(new Error('Error Occured in generating fonts'));
+            callback('Error Occured in generating fonts');
         }
+        process.exit();
     });
 }
 exports.Main = Main;

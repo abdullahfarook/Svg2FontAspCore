@@ -1,4 +1,10 @@
 :host ::ng-deep{
+  .k-file-state{
+    display: none;
+  }
+  .k-file-extension{
+    display: none;
+  }
   .img-preview {
   width: 100%;
   max-width: 35px;

@@ -1,18 +1,18 @@
 import { Component, ViewChild, ElementRef, OnInit, Inject, AfterViewInit } from '@angular/core';
-import { FileRestrictions, SelectEvent, ClearEvent, RemoveEvent, FileInfo, FileState, UploadComponent, UploadEvent } from '@progress/kendo-angular-upload';
+import { FileRestrictions, SelectEvent, ErrorEvent, RemoveEvent, FileInfo, FileState, UploadComponent, UploadEvent, SuccessEvent } from '@progress/kendo-angular-upload';
 import { SvgService } from 'src/services/svg.service';
 import { createElement } from '@syncfusion/ej2-base';
 import { DOCUMENT } from '@angular/platform-browser';
+import { NotificationService } from '@progress/kendo-angular-notification';
+import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { saveAs } from 'file-saver';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
     public previewElements = [];
-    ngAfterViewInit(): void {
-       
-    }
     private delFlag = false;
     public host = 'http://localhost:5000'
     public api = this.host + '/api';
@@ -21,7 +21,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild('upload')
     uploadComponent: UploadComponent;
     myRestrictions: FileRestrictions = {
-        allowedExtensions: ['.svg', '.png', '.jpg']
+        allowedExtensions: ['.svg']
     };
     allFiles: Array<FileInfo> = [];
     selectEventHandler(e: SelectEvent) {
@@ -32,7 +32,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.SvgService.getAllSvgs().subscribe(res => {
             var files = res.files;
-            console.log(files);
             var fileInfos = files.map(file =>
                 <FileInfo>{
                     name: file.name,
@@ -49,63 +48,79 @@ export class AppComponent implements OnInit, AfterViewInit {
             );
             this.allFiles = fileInfos;
             setTimeout(() => {
-                this.renderImages();
+                this.generateUploadedPreview();
             }, 10);
-           
-           
+
+
 
         });
     }
-    public renderImages(){
-        Array.from(document.getElementsByClassName("k-file-extension-wrapper")).forEach((item:HTMLElement,i)=> {
-        item.childNodes.forEach(n=> item.removeChild(n));
-        let preview: HTMLImageElement = <HTMLImageElement>this.createElement('img', { className: 'img-preview' });
-        this.getUrlAsBlob(`${this.host}/svg/${this.allFiles[i].name}`).then(reader => {
-            preview.src = reader.result as string;
-            item.appendChild(preview);
-        })
-         });
-        // this.previewElements = document.getElementsByClassName('k-file-extension-wrapper') as any;
-        // for (const iterator:Htmle of this.previewElements) {
-        //     console.log(iterator);
-        // }      
-        //  console.log(this.previewElements);
+    public generateUploadedPreview() {
+        Array.from(document.getElementsByClassName("k-file-extension-wrapper")).forEach((item: HTMLElement, i) => {
+            let preview: HTMLImageElement = <HTMLImageElement>this.createElement('img', { className: 'img-preview' });
+            this.getUrlAsBlob(`${this.host}/svg/${this.allFiles[i].name}`).then(reader => {
+                preview.src = reader.result as string;
+                item.appendChild(preview);
+            })
+        });
     }
-    public uploadEventHandler(e: UploadEvent) {
-        e.data = {
-            description: 'File upload'
-        };
+    public generateSelectedPreview(e: UploadEvent) {
+        setTimeout(() => {
+            e.files.forEach(f => {
+                var selectedFile = document.querySelectorAll(`[data-uid='${f.uid}'] `)[0];
+                var parent = selectedFile.getElementsByClassName('k-file-extension-wrapper')[0] as HTMLElement;
+                let preview: HTMLImageElement = <HTMLImageElement>this.createElement('img', { className: 'img-preview' });
+                let file: File = f.rawFile; let reader: FileReader = new FileReader();
+                reader.addEventListener('load', () => {
+                    preview.src = reader.result as string;
+                    parent.appendChild(preview);
+                }, false);
+                if (file) { reader.readAsDataURL(file); }
+            })
+        }, 10);
     }
-
-    public selectFile(e:SelectEvent){
-        console.log(e);
+    generateFonts(){
+        this.SvgService.generateFonts().subscribe(blob=>{
+            saveAs(blob, 'icoons.zip', {
+                type: 'application/zip' // --> or whatever you need here
+             });
+        }
+        ,(err:HttpErrorResponse)   =>{
+            var res = err as unknown as HttpResponse<any>;
+            this.onError({operation:'upload',response:res,files:[]});
+        });
     }
-    public removeEventHandler(e: RemoveEvent) {
+    public onUploadSuccess(e:SuccessEvent){
+        if(e.operation==='remove' && e.response instanceof HttpResponse){
+            this.notificationService.show({
+                content: `File Removed Successfully`,
+                hideAfter: 1500,
+                position: { horizontal: 'center', vertical: 'top' },
+                animation: { type: 'fade', duration: 400 },
+                type: { style: 'success', icon: true }
+            });
+        }
+        if(e.operation==='upload' && e.response instanceof HttpResponse){
+            this.notificationService.show({
+                content: `File Uploaded Successfully`,
+                hideAfter: 1500,
+                position: { horizontal: 'center', vertical: 'top' },
+                animation: { type: 'fade', duration: 400 },
+                type: { style: 'success', icon: true }
+            });
+        }
         
-        
-        e.preventDefault();
-        return;
-        // if(this.delFlag){
-        //     e.preventDefault();
-        //     this.delFlag = false;
-        //     return;
-        // }
-        // console.log(e);
-        // this.delFlag = true;
-        // this.remove(e.files[0].uid);
-        // e.preventDefault();
-        // e.data = {
-        //     description: 'File remove'
-        // };
     }
-    public remove(uid: string) {
-      
+    public onError(e: ErrorEvent) {
+        this.notificationService.show({
+            content: `${e.response.statusText}`,
+            hideAfter: 1500,
+            position: { horizontal: 'center', vertical: 'top' },
+            animation: { type: 'fade', duration: 400 },
+            type: { style: 'error', icon: true }
+        });
     }
-
-    public showButton(state: FileState): boolean {
-        return (state === FileState.Uploaded) ? true : false;
-    }
-    constructor(public SvgService: SvgService) {
+    constructor(public SvgService: SvgService, private notificationService: NotificationService) {
     }
     private getUrlAsBlob(url: string): Promise<FileReader> {
         return new Promise<FileReader>((res, rej) => {
@@ -122,7 +137,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                     res(reader);
                 };
 
-            },false)
+            }, false)
             request.send();
         });
     }
@@ -148,7 +163,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         }
         return element;
     }
-     private attributes(element, attributes) {
+    private attributes(element, attributes) {
         var keys = Object.keys(attributes);
         var ele = element;
         for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
