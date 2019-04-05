@@ -6,16 +6,20 @@ import { DOCUMENT } from '@angular/platform-browser';
 import { NotificationService } from '@progress/kendo-angular-notification';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { saveAs } from 'file-saver';
+import { FontGeneratorConfig } from 'src/model/svg2font.model';
+import { List } from 'linqts';
+// import * as DOMParser  from 'xmldom'
+import { from } from 'rxjs';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    public previewElements = [];
-    private delFlag = false;
+    public fontConfig: FontGeneratorConfig;
     public host = 'http://localhost:5000'
     public api = this.host + '/api';
+    private colors:Array<Array<string>>;
     uploadSaveUrl = this.api + '/Uploader/Save';
     uploadRemoveUrl = this.api + '/Uploader/Remove';
     @ViewChild('upload')
@@ -26,7 +30,12 @@ export class AppComponent implements OnInit {
     allFiles: Array<FileInfo> = [];
     selectEventHandler(e: SelectEvent) {
         console.log('select');
-        e.files.forEach((file) => this.allFiles.push(file));
+        e.preventDefault();
+        for (let index = 0; index < e.files.length; index++) {
+            const element = e.files[index];
+            this.uploadComponent.cancelUploadByUid(element.uid);
+        }
+        // e.files.forEach((file) => this.allFiles.push(file));
     }
 
     ngOnInit(): void {
@@ -64,34 +73,154 @@ export class AppComponent implements OnInit {
             })
         });
     }
-    public generateSelectedPreview(e: UploadEvent) {
-        setTimeout(() => {
-            e.files.forEach(f => {
-                var selectedFile = document.querySelectorAll(`[data-uid='${f.uid}'] `)[0];
-                var parent = selectedFile.getElementsByClassName('k-file-extension-wrapper')[0] as HTMLElement;
-                let preview: HTMLImageElement = <HTMLImageElement>this.createElement('img', { className: 'img-preview' });
-                let file: File = f.rawFile; let reader: FileReader = new FileReader();
-                reader.addEventListener('load', () => {
-                    preview.src = reader.result as string;
-                    parent.appendChild(preview);
-                }, false);
-                if (file) { reader.readAsDataURL(file); }
-            })
-        }, 10);
+    // public generateSelectedPreview(e: UploadEvent) {
+    //     setTimeout(() => {
+    //         e.files.forEach(f => {
+
+    //         })
+    //     }, 10);
+    // }
+    public ValidateSvgAndGeneratePreview(e: UploadEvent) {
+        // e.preventDefault();
+        this.colors = [];
+        for (let index = 0; index < e.files.length; index++) {
+            const newFile = e.files[index];
+            let fileReader = new FileReader();
+            fileReader.onload = (load) => {
+                //  console.log(fileReader.result);
+
+                // Validate SVG
+                var parser = new DOMParser();
+                var svg = parser.parseFromString(fileReader.result.toString(), 'image/svg+xml').getElementsByTagName('svg')[0];
+                // console.log(svg);
+                var col: string[] = [];
+                // var filtered=  Array.from(svg.childNodes).filter(f=> f.nodeType!==3);
+                // console.log(filtered);
+                 Array.from(svg.childNodes).forEach(f=> this.parseNode(f,col));
+                 if(col.length){
+                     this.uploadComponent.cancelUploadByUid(newFile.uid);
+                     this.onError({
+                         response:<any>{
+                             statusText:'Colored SVG not supported',
+                            },
+                         files:[],
+                         operation:'upload'
+                         
+                        });
+                    //  newFile.state=0;
+                    //  e.preventDefault();
+                    //  throw new Error('error');
+                 } else{
+                    setTimeout(() => {
+                        var selectedFile = document.querySelectorAll(`[data-uid='${newFile.uid}'] `)[0];
+                        var parent = selectedFile.getElementsByClassName('k-file-extension-wrapper')[0] as HTMLElement;
+                        let preview: HTMLImageElement = <HTMLImageElement>this.createElement('img', { className: 'img-preview' });
+                        let file: File = newFile.rawFile; let reader: FileReader = new FileReader();
+                        reader.addEventListener('load', () => {
+                            preview.src = reader.result as string;
+                            parent.appendChild(preview);
+                        }, false);
+                        if (file) { reader.readAsDataURL(file); }
+                    }, 10);
+                 }
+                // var child = svgDom.firstChild;
+                // console.log(svgDom);
+                // var childList = new List<ChildNode>(Array.from(child.childNodes));
+                // var elements = 
+                // childList
+                // .Where(c=> c.nodeType!==3)
+                // .Where((c,i)=> c.parentElement.getAttribute('fill')!=='' || c.parentElement.style.fill!=='')
+                // .ToArray();
+                // var color;
+                // elements.forEach((item, i) => {
+                //     var fill = item.parentElement.getAttribute('fill');
+                //     if(fill){
+
+                //     }
+                //     // if (!color) {
+                //     //     color = item.style.fill;
+                //     // } else {
+                //     //     var valid = color === item.style.fill ? true : false;
+                //     //     if (!valid) {
+                //     //        console.log('not');
+                //     //     }
+                //     // }
+                // });
+                // console.log(elements);
+
+                // for (let index = 0; index < child.childNodes.length; index++) {
+                //     const node = child.childNodes[index];
+                //     console.log('Node ==> '+node);
+                    
+                // }
+                // var svgPaths = svgDom.getElementsByTagName('path');
+                // if (svgPaths.length > 1) {
+                //     var color;
+                //     Array.from(svgPaths).forEach((item: SVGPathElement, i) => {
+                //         if (!color) {
+                //             color = item.style.fill;
+                //         } else {
+                //             var valid = color === item.style.fill ? true : false;
+                //             if (!valid) {
+                //                console.log('not');
+                //             }
+                //         }
+                //     });
+                // }
+
+                // Generate Preview of Svg
+                
+            }
+            fileReader.readAsText(newFile.rawFile);
+
+        }
     }
-    generateFonts(){
-        this.SvgService.generateFonts().subscribe(blob=>{
+    hasDuplicates(array:string[]) {
+        var valuesSoFar = Object.create(null);
+        for (var i = 0; i < array.length; ++i) {
+            var value = array[i];
+            if (value in valuesSoFar) {
+                return true;
+            }
+            valuesSoFar[value] = true;
+        }
+        return false;
+    }
+    generateFonts() {
+        this.SvgService.generateFonts(this.fontConfig).subscribe(blob => {
             saveAs(blob, 'icoons.zip', {
                 type: 'application/zip' // --> or whatever you need here
-             });
+            });
         }
-        ,(err:HttpErrorResponse)   =>{
-            var res = err as unknown as HttpResponse<any>;
-            this.onError({operation:'upload',response:res,files:[]});
-        });
+            , (err: HttpErrorResponse) => {
+                var res = err as unknown as HttpResponse<any>;
+                this.onError({ operation: 'upload', response: res, files: [] });
+            });
     }
-    public onUploadSuccess(e:SuccessEvent){
-        if(e.operation==='remove' && e.response instanceof HttpResponse){
+    private parseNode(node:ChildNode,colors:string[]){
+        if(node.nodeType===3){
+            return;
+        }
+        if(node.hasChildNodes){
+           Array.from(node.childNodes).forEach(n=> this.parseNode(n,colors));
+        }
+        
+        var nodeElement = node as HTMLElement;
+        if(nodeElement){
+             
+            var attrFill =nodeElement.getAttribute('fill');
+            if(attrFill){
+                colors.push(attrFill);
+            }
+            var styleFill = nodeElement.style.fill;
+            if(styleFill){
+                colors.push(styleFill);
+            }
+        }
+
+    }
+    public onUploadSuccess(e: SuccessEvent) {
+        if (e.operation === 'remove' && e.response instanceof HttpResponse) {
             this.notificationService.show({
                 content: `File Removed Successfully`,
                 hideAfter: 1500,
@@ -100,7 +229,7 @@ export class AppComponent implements OnInit {
                 type: { style: 'success', icon: true }
             });
         }
-        if(e.operation==='upload' && e.response instanceof HttpResponse){
+        if (e.operation === 'upload' && e.response instanceof HttpResponse) {
             this.notificationService.show({
                 content: `File Uploaded Successfully`,
                 hideAfter: 1500,
@@ -109,7 +238,7 @@ export class AppComponent implements OnInit {
                 type: { style: 'success', icon: true }
             });
         }
-        
+
     }
     public onError(e: ErrorEvent) {
         this.notificationService.show({
@@ -121,6 +250,13 @@ export class AppComponent implements OnInit {
         });
     }
     constructor(public SvgService: SvgService, private notificationService: NotificationService) {
+        this.fontConfig = <FontGeneratorConfig>{
+            fontName: 'icoons',
+            clasPrefix: 'icon-',
+            classSufix: ' ',
+            ie7: false,
+            sass: false
+        }
     }
     private getUrlAsBlob(url: string): Promise<FileReader> {
         return new Promise<FileReader>((res, rej) => {

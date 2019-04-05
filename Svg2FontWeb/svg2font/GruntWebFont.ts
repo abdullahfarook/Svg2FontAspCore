@@ -23,7 +23,8 @@ export
         this._grunt = grunt;
         this._fontConfig = fontConfig;
         //this.RegisterAllDone();
-        this._grunt.option('force', false);
+        //this._grunt.option('force', false);
+        //this._grunt.option('verbose', true);
         //var gruntLogWarn = grunt.log.warn;
         //grunt.log.warn = function (error) {
         //    var pattern = new RegExp("^Source file (.*) not found.$");
@@ -160,6 +161,13 @@ export
             this._grunt.registerTask('default', this._tasks);
             //this._grunt.tasks(this._tasks);
             this._grunt.tasks('default');
+            setTimeout(() => {
+                //this._grunt.util.error('Time Over');
+                this._grunt.task.run('exit');
+                var done = this._grunt.task.current.async();
+                done(false);
+                //this._deffered.reject(this._error);
+            }, 55 * 1000);
         })
     }
     private RegisterConfigs() {
@@ -188,6 +196,12 @@ export
             this._deffered.resolve("Success");
             console.log('All Tasks Success from GruntWebFont Class');
         });
+        return this;
+    }
+    public GruntKillTask(): GruntFont {
+        this._tasks.push('exit');
+        this._grunt.config.set('exit', {});
+        grunt.loadNpmTasks('grunt-exit');
         return this;
     }
     public ReturnGruntException(exitOnWarn:boolean):GruntFont {

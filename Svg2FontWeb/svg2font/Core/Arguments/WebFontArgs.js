@@ -20,7 +20,17 @@ var Options = /** @class */ (function () {
     function Options() {
         this.fontFilename = 'brackclay';
         this.fontFamilyName = 'brickClay';
+        this.templateOptions = new TemplateOptions();
     }
     return Options;
 }());
+exports.Options = Options;
+var TemplateOptions = /** @class */ (function () {
+    function TemplateOptions() {
+        this.baseClass = 'icon';
+        this.classPrefix = 'icon';
+    }
+    return TemplateOptions;
+}());
+exports.TemplateOptions = TemplateOptions;
 //# sourceMappingURL=WebFontArgs.js.map

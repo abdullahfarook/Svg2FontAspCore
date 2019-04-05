@@ -10,8 +10,13 @@ class Config {
     options: Options = new Options();
 }
 
-class Options {
+export class Options {
     fontFilename= 'brackclay';
-    fontFamilyName = 'brickClay'
+    fontFamilyName = 'brickClay';
+    templateOptions = new TemplateOptions();
+}
+export class TemplateOptions {
+    baseClass = 'icon';
+    classPrefix = 'icon';
 }
 

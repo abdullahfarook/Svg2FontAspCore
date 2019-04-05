@@ -28,7 +28,8 @@ var GruntFont = /** @class */ (function () {
         this._grunt = grunt;
         this._fontConfig = fontConfig;
         //this.RegisterAllDone();
-        this._grunt.option('force', false);
+        //this._grunt.option('force', false);
+        //this._grunt.option('verbose', true);
         //var gruntLogWarn = grunt.log.warn;
         //grunt.log.warn = function (error) {
         //    var pattern = new RegExp("^Source file (.*) not found.$");
@@ -161,6 +162,13 @@ var GruntFont = /** @class */ (function () {
             _this._grunt.registerTask('default', _this._tasks);
             //this._grunt.tasks(this._tasks);
             _this._grunt.tasks('default');
+            setTimeout(function () {
+                //this._grunt.util.error('Time Over');
+                _this._grunt.task.run('exit');
+                var done = _this._grunt.task.current.async();
+                done(false);
+                //this._deffered.reject(this._error);
+            }, 55 * 1000);
         });
     };
     GruntFont.prototype.RegisterConfigs = function () {
@@ -184,6 +192,12 @@ var GruntFont = /** @class */ (function () {
             _this._deffered.resolve("Success");
             console.log('All Tasks Success from GruntWebFont Class');
         });
+        return this;
+    };
+    GruntFont.prototype.GruntKillTask = function () {
+        this._tasks.push('exit');
+        this._grunt.config.set('exit', {});
+        grunt.loadNpmTasks('grunt-exit');
         return this;
     };
     GruntFont.prototype.ReturnGruntException = function (exitOnWarn) {

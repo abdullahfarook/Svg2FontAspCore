@@ -1,33 +1,59 @@
-<kendo-upload
-#upload="kendoUpload"
-(upload)="generateSelectedPreview($event)"
-(error)="onError($event)"
-(success)="onUploadSuccess($event)"
-[autoUpload]="true"
-[restrictions]="myRestrictions"
-[saveUrl]="uploadSaveUrl"
-[(ngModel)]="allFiles"
-[removeUrl]="uploadRemoveUrl">
-<!-- <ng-template kendoUploadFileTemplate let-files let-state="state">
-    <div *ngFor="let file of files">
-            <div>Name: {{file.name}} Size: {{file.size}} bytes</div>
-            <button *ngIf="showButton(state)"
-                (click)="remove(file)"
-                class="k-button" style="position: relative; left: .2em;">
-                Remove
-            </button>
+<div fxLayout.lt-md="column"
+     fxLayout="row"
+     fxLayoutGap="10px"
+     fxFlex>
+  <div fxLayout="column"
+       fxFlex>
+    <kendo-upload #upload="kendoUpload"
+                  (select)="ValidateSvgAndGeneratePreview($event)"
+                  (error)="onError($event)"
+                  (success)="onUploadSuccess($event)"
+                  [autoUpload]="true"
+                  [restrictions]="myRestrictions"
+                  [saveUrl]="uploadSaveUrl"
+                  [(ngModel)]="allFiles"
+                  [removeUrl]="uploadRemoveUrl">
+    </kendo-upload>
+  </div>
+  <div fxLayout="column"
+       fxFlex>
+    <div class="row">
+      <kendo-textbox-container [style.width]="'80%'"
+                               floatingLabel="Font Name">
+        <input kendoTextBox
+        name="fontname"  [(ngModel)]="fontConfig.fontName"
+                />
+      </kendo-textbox-container>
+      <div fxLayout="row" fxLayoutGap="10px">
+        <kendo-textbox-container fxLayout="column" [style.width]="'80%'"
+                                 floatingLabel="Class Prefix">
+          <input kendoTextBox
+          name="prefix"  [(ngModel)]="fontConfig.clasPrefix"
+                 value="icon-" />
+        </kendo-textbox-container>
+        <kendo-textbox-container fxLayout="column"  [style.width]="'80%'"
+                                 floatingLabel="Class Sufix">
+          <input kendoTextBox
+          name="sufix"  [(ngModel)]="fontConfig.classSufix" />
+        </kendo-textbox-container>
+      </div>
+      <form class="k-form">
+    <div class="k-form-field"  fxLayout="column" fxLayoutGap="10px">
+      <div>
+          <input type="checkbox" name="ie7support"  [(ngModel)]="fontConfig.ie7" id="ch1" class="k-checkbox" />
+          <label class="k-checkbox-label" for="ch1">Support IE 7 & IE 6</label>
+      </div>
+      <div>
+          <input type="checkbox" id="ch2" name="gensass"  [(ngModel)]="fontConfig.sass" class="k-checkbox" />
+          <label class="k-checkbox-label" for="ch2">Generate Sass, Less or Stylus variables</label>
+      </div>
+       
     </div>
- </ng-template> -->
-</kendo-upload>
-<div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-4 example-col">
-          <p></p>
-          <button (click)="generateFonts()" kendoButton [icon]="'edit-tools'">Generate Font</button>
-        </div>
-<!-- <ol class="border">
-    <li>List Item<br/>And some more text here.<br/>The more text we add, the longer this thin gray border line to the left gets.</li>
-    <li>List Item<br/></li>
-    <li>List Item</li>
-    <li>List Item</li>
-  </ol> -->
-  
+</form>
+      <p></p>
+      <button (click)="generateFonts()"
+              kendoButton
+              [icon]="'edit-tools'">Generate Font</button>
+    </div>
+
+  </div>
