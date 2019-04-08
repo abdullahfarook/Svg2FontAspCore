@@ -8,7 +8,7 @@
                   (select)="ValidateSvgAndGeneratePreview($event)"
                   (error)="onError($event)"
                   (success)="onUploadSuccess($event)"
-                  [autoUpload]="true"
+                  [autoUpload]="false"
                   [restrictions]="myRestrictions"
                   [saveUrl]="uploadSaveUrl"
                   [(ngModel)]="allFiles"
@@ -21,20 +21,20 @@
       <kendo-textbox-container [style.width]="'80%'"
                                floatingLabel="Font Name">
         <input kendoTextBox
-        name="fontname"  [(ngModel)]="fontConfig.fontName"
+        name="fontname"  [(ngModel)]="fontConfig.fontFamilyName"
                 />
       </kendo-textbox-container>
       <div fxLayout="row" fxLayoutGap="10px">
         <kendo-textbox-container fxLayout="column" [style.width]="'80%'"
-                                 floatingLabel="Class Prefix">
+                                 floatingLabel="Base Class">
           <input kendoTextBox
-          name="prefix"  [(ngModel)]="fontConfig.clasPrefix"
+          name="prefix"  [(ngModel)]="fontConfig.baseClass"
                  value="icon-" />
         </kendo-textbox-container>
         <kendo-textbox-container fxLayout="column"  [style.width]="'80%'"
-                                 floatingLabel="Class Sufix">
+                                 floatingLabel="Class Prefix">
           <input kendoTextBox
-          name="sufix"  [(ngModel)]="fontConfig.classSufix" />
+          name="sufix"  [(ngModel)]="fontConfig.clasPrefix" />
         </kendo-textbox-container>
       </div>
       <form class="k-form">

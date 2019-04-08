@@ -21,6 +21,8 @@ var Options = /** @class */ (function () {
         this.fontFilename = 'brackclay';
         this.fontFamilyName = 'brickClay';
         this.templateOptions = new TemplateOptions();
+        this.stylesheets = ['css'];
+        this.ie7 = false;
     }
     return Options;
 }());
@@ -28,7 +30,7 @@ exports.Options = Options;
 var TemplateOptions = /** @class */ (function () {
     function TemplateOptions() {
         this.baseClass = 'icon';
-        this.classPrefix = 'icon';
+        this.classPrefix = 'icon-';
     }
     return TemplateOptions;
 }());

@@ -8,9 +8,9 @@ namespace Svg2Font.Api.Model
 {
     public class FontGeneratorConfig
     {
-        public string FontName { get; set; }
+        public string FontFamilyName { get; set; }
         public string ClasPrefix { get; set; }
-        public string ClassSufix { get; set; }
+        public string BaseClass { get; set; }
         public bool Ie7 { get; set; }
         public bool Sass { get; set; }
     }

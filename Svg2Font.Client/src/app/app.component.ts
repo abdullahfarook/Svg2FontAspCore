@@ -82,6 +82,7 @@ export class AppComponent implements OnInit {
     // }
     public ValidateSvgAndGeneratePreview(e: UploadEvent) {
         // e.preventDefault();
+        var uploading = true;
         this.colors = [];
         for (let index = 0; index < e.files.length; index++) {
             const newFile = e.files[index];
@@ -92,13 +93,11 @@ export class AppComponent implements OnInit {
                 // Validate SVG
                 var parser = new DOMParser();
                 var svg = parser.parseFromString(fileReader.result.toString(), 'image/svg+xml').getElementsByTagName('svg')[0];
-                // console.log(svg);
                 var col: string[] = [];
-                // var filtered=  Array.from(svg.childNodes).filter(f=> f.nodeType!==3);
-                // console.log(filtered);
                  Array.from(svg.childNodes).forEach(f=> this.parseNode(f,col));
                  if(col.length){
                      this.uploadComponent.cancelUploadByUid(newFile.uid);
+                     uploading = false;
                      this.onError({
                          response:<any>{
                              statusText:'Colored SVG not supported',
@@ -107,9 +106,6 @@ export class AppComponent implements OnInit {
                          operation:'upload'
                          
                         });
-                    //  newFile.state=0;
-                    //  e.preventDefault();
-                    //  throw new Error('error');
                  } else{
                     setTimeout(() => {
                         var selectedFile = document.querySelectorAll(`[data-uid='${newFile.uid}'] `)[0];
@@ -123,6 +119,7 @@ export class AppComponent implements OnInit {
                         if (file) { reader.readAsDataURL(file); }
                     }, 10);
                  }
+                 if(uploading) this.uploadComponent.uploadFiles();
                 // var child = svgDom.firstChild;
                 // console.log(svgDom);
                 // var childList = new List<ChildNode>(Array.from(child.childNodes));
@@ -135,7 +132,6 @@ export class AppComponent implements OnInit {
                 // elements.forEach((item, i) => {
                 //     var fill = item.parentElement.getAttribute('fill');
                 //     if(fill){
-
                 //     }
                 //     // if (!color) {
                 //     //     color = item.style.fill;
@@ -147,11 +143,9 @@ export class AppComponent implements OnInit {
                 //     // }
                 // });
                 // console.log(elements);
-
                 // for (let index = 0; index < child.childNodes.length; index++) {
                 //     const node = child.childNodes[index];
-                //     console.log('Node ==> '+node);
-                    
+                //     console.log('Node ==> '+node);    
                 // }
                 // var svgPaths = svgDom.getElementsByTagName('path');
                 // if (svgPaths.length > 1) {
@@ -167,7 +161,6 @@ export class AppComponent implements OnInit {
                 //         }
                 //     });
                 // }
-
                 // Generate Preview of Svg
                 
             }
@@ -251,9 +244,9 @@ export class AppComponent implements OnInit {
     }
     constructor(public SvgService: SvgService, private notificationService: NotificationService) {
         this.fontConfig = <FontGeneratorConfig>{
-            fontName: 'icoons',
+            fontFamilyName: 'Brickclay',
             clasPrefix: 'icon-',
-            classSufix: ' ',
+            baseClass: 'icon',
             ie7: false,
             sass: false
         }

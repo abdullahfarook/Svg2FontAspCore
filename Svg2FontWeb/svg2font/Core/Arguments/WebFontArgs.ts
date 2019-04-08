@@ -1,4 +1,11 @@
 ﻿import { Utils } from '../Utils';
+export interface WebFontReq {
+    fontFamilyName: string;
+    clasPrefix: string;
+    ie7: boolean;
+    sass: boolean;
+    baseClass: string;
+}
 export 
     class WebfontConfig implements ITaskConfig {
     config: Config= new Config();
@@ -14,9 +21,11 @@ export class Options {
     fontFilename= 'brackclay';
     fontFamilyName = 'brickClay';
     templateOptions = new TemplateOptions();
+    stylesheets = ['css'];
+    ie7 = false;
 }
 export class TemplateOptions {
     baseClass = 'icon';
-    classPrefix = 'icon';
+    classPrefix = 'icon-';
 }
 

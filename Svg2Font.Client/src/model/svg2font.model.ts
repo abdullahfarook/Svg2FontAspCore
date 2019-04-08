@@ -7,9 +7,9 @@ export interface GetFontResponse {
 
 }
 export interface FontGeneratorConfig {
-    fontName: string;
+    fontFamilyName: string;
     clasPrefix: string;
-    classSufix: string;
+    baseClass: string;
     ie7: boolean;
     sass: boolean;
 }

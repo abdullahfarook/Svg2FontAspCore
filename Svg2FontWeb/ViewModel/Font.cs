@@ -9,7 +9,7 @@ namespace Svg2Font.Api.ViewModel
 {
     public class GetFontRequest:FontGeneratorConfig
     {
-        
+
     }
     public class GetFontResponse
     {

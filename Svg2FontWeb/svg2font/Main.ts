@@ -1,13 +1,21 @@
 ﻿import { ICallback } from "./Core/ICallback";
 import { GruntFont } from "./GruntWebFont";
-import { WebfontConfig, Options } from "./Core/Arguments/WebFontArgs";
-export function Main(callback: ICallback, data: any) {
+import { WebfontConfig, Options, WebFontReq } from "./Core/Arguments/WebFontArgs";
+export function Main(callback: ICallback, args: WebFontReq) {
     var webConfig = new WebfontConfig();
+
     var options = new Options();
-    var argument = data as Options;
-    webConfig.config.options = {
-        ...options, ...argument
-    };
+    if (args.fontFamilyName) options.fontFamilyName = args.fontFamilyName;
+
+    if (args.clasPrefix) options.templateOptions.classPrefix = args.clasPrefix;
+
+    if (args.ie7) options.ie7 = true;
+
+    if (args.sass) options.stylesheets.push('scss');
+
+    if (args.baseClass) options.templateOptions.baseClass = args.baseClass;
+
+    webConfig.config.options = options;
     console.log(webConfig.config.options);
     new GruntFont(webConfig)
     .ReturnGruntException(true)
