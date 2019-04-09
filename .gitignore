@@ -277,3 +277,4 @@ Svg2FontWeb/svg2font/*.js.map
 **/.js.map
 **/**/*.js.map
 *.js.map
+**/wwwroot/**

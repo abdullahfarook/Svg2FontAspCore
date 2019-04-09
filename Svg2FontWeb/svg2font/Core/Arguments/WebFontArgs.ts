@@ -22,7 +22,8 @@ export class Options {
     fontFamilyName = 'brickClay';
     templateOptions = new TemplateOptions();
     stylesheets = ['css'];
-    ie7 = false;
+    ie7 = false
+    engine = 'fontforge';
 }
 export class TemplateOptions {
     baseClass = 'icon';
