@@ -23,7 +23,6 @@ export class Options {
     templateOptions = new TemplateOptions();
     stylesheets = ['css'];
     ie7 = false;
-    engine = 'node';
 }
 export class TemplateOptions {
     baseClass = 'icon';
