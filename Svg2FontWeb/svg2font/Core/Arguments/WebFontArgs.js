@@ -23,6 +23,7 @@ var Options = /** @class */ (function () {
         this.templateOptions = new TemplateOptions();
         this.stylesheets = ['css'];
         this.ie7 = false;
+        this.engine = 'node';
     }
     return Options;
 }());
